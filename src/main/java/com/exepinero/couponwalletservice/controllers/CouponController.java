@@ -8,10 +8,13 @@ import com.exepinero.couponwalletservice.hateoas.CouponModelAssembler;
 import com.exepinero.couponwalletservice.repositories.CouponRepository;
 import com.exepinero.couponwalletservice.repositories.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/wallets/{walletId}/coupons")
@@ -31,14 +34,21 @@ public class CouponController {
 
 
     @GetMapping
-    public List<Coupon> getCoupons(@PathVariable("walletId") Integer walletId){
+    public CollectionModel<EntityModel<Coupon>> getCoupons(@PathVariable("walletId") Integer walletId){
         Wallet wallet = walletRepository.findById(walletId)
                 .orElseThrow(() -> new WalletNotFoundException(walletId));
-        return wallet.getCupones();
+
+        List<EntityModel<Coupon>> couponsModel = wallet.getCupones().stream()
+                .map(couponModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(couponsModel,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(WalletController.class).getWallet(walletId)).withRel("wallet"));
+
     }
 
     @GetMapping("{id}")
-    public EntityModel<Coupon> getOne(@PathVariable Integer id){
+    public EntityModel<Coupon> getOne(@PathVariable("walletId") Integer walletId, @PathVariable Integer id){
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new CouponNotFoundException(id));
 
