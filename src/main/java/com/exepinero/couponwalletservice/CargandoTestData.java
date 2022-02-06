@@ -48,8 +48,6 @@ public class CargandoTestData implements CommandLineRunner {
 
         System.out.println("################################## Después de guardar los 2 primeros cupones");
 
-        Thread.sleep(1000);
-
         Coupon cupon3 = new Coupon();
         cupon3.setEmpresa("Coca cola");
         cupon3.setPromo("Gasosea gratis");

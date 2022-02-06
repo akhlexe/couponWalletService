@@ -1,5 +1,8 @@
 package com.exepinero.couponwalletservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -11,7 +14,6 @@ public class Coupon {
     private Integer id;
 
     @Temporal(TemporalType.DATE)
-    @NotNull
     private Date fechaCreacion;
 
     @NotNull
@@ -23,6 +25,7 @@ public class Coupon {
     private Date fechaExpiracion;
 
     @ManyToOne
+    @JsonIgnore
     private Wallet walletContenedora;
 
 
@@ -34,7 +37,6 @@ public class Coupon {
                 ", empresa='" + empresa + '\'' +
                 ", promo='" + promo + '\'' +
                 ", fechaExpiracion=" + fechaExpiracion +
-                ", walletContenedora=" + walletContenedora +
                 '}';
     }
 
