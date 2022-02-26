@@ -2,6 +2,7 @@ package com.exepinero.couponwalletservice;
 
 import com.exepinero.couponwalletservice.auth.ApplicationUser;
 import com.exepinero.couponwalletservice.auth.ApplicationUserRepository;
+import com.exepinero.couponwalletservice.auth.ApplicationUserService;
 import com.exepinero.couponwalletservice.entity.Coupon;
 import com.exepinero.couponwalletservice.entity.Wallet;
 import com.exepinero.couponwalletservice.repositories.CouponRepository;
@@ -23,7 +24,7 @@ public class CargandoTestData implements CommandLineRunner {
     private CouponRepository couponRepository;
 
     @Autowired
-    private ApplicationUserRepository userRepository;
+    private ApplicationUserService applicationUserService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -73,8 +74,8 @@ public class CargandoTestData implements CommandLineRunner {
         user2.setUsername("nico");
         user2.setPassword("kiomi");
 
-        userRepository.save(user1);
-        userRepository.save(user2);
+        applicationUserService.saveUser(user1);
+        applicationUserService.saveUser(user2);
 
         System.out.println("FINISH");
     }

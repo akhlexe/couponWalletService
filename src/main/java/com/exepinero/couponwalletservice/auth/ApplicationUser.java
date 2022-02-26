@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 public class ApplicationUser implements UserDetails {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String username;
     private String password;

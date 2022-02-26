@@ -1,5 +1,6 @@
 package com.exepinero.couponwalletservice.auth;
 
+import lombok.extern.log4j.Log4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,17 +21,25 @@ public class ApplicationUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        return applicationUserDao.findByUsername(username)
+        ApplicationUser applicationUser = applicationUserDao.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
+
+        System.out.println(applicationUser.getPassword());
+        return applicationUser;
     }
 
     /*
     * Guarda el usuario creado encryptando la contraseña
      */
 
+
+
     public UserDetails saveUser(ApplicationUser applicationUser){
         String password = applicationUser.getPassword();
         applicationUser.setPassword(passwordEncoder.encode(password));
+
+        System.out.println(applicationUser.getPassword());
+
         return applicationUserDao.save(applicationUser);
     }
 }
