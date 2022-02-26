@@ -1,11 +1,14 @@
 package com.exepinero.couponwalletservice;
 
+import com.exepinero.couponwalletservice.auth.ApplicationUser;
+import com.exepinero.couponwalletservice.auth.ApplicationUserRepository;
 import com.exepinero.couponwalletservice.entity.Coupon;
 import com.exepinero.couponwalletservice.entity.Wallet;
 import com.exepinero.couponwalletservice.repositories.CouponRepository;
 import com.exepinero.couponwalletservice.repositories.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -18,6 +21,9 @@ public class CargandoTestData implements CommandLineRunner {
     private WalletRepository walletRepository;
     @Autowired
     private CouponRepository couponRepository;
+
+    @Autowired
+    private ApplicationUserRepository userRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -58,6 +64,17 @@ public class CargandoTestData implements CommandLineRunner {
         couponRepository.save(cupon3);
 
         System.out.println("################################## Después de guardar el último cupón");
+
+        ApplicationUser user1 = new ApplicationUser();
+        user1.setUsername("exe");
+        user1.setPassword("jack");
+
+        ApplicationUser user2 = new ApplicationUser();
+        user2.setUsername("nico");
+        user2.setPassword("kiomi");
+
+        userRepository.save(user1);
+        userRepository.save(user2);
 
         System.out.println("FINISH");
     }
