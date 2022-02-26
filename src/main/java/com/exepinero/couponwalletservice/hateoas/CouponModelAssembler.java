@@ -1,11 +1,8 @@
 package com.exepinero.couponwalletservice.hateoas;
 
 import com.exepinero.couponwalletservice.controllers.CouponController;
-import com.exepinero.couponwalletservice.controllers.WalletController;
 import com.exepinero.couponwalletservice.entity.Coupon;
-import com.exepinero.couponwalletservice.entity.Wallet;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
