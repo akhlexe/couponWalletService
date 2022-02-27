@@ -24,7 +24,6 @@ public class ApplicationUserService implements UserDetailsService {
         ApplicationUser applicationUser = applicationUserDao.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
 
-        System.out.println(applicationUser.getPassword());
         return applicationUser;
     }
 
@@ -37,8 +36,6 @@ public class ApplicationUserService implements UserDetailsService {
     public UserDetails saveUser(ApplicationUser applicationUser){
         String password = applicationUser.getPassword();
         applicationUser.setPassword(passwordEncoder.encode(password));
-
-        System.out.println(applicationUser.getPassword());
 
         return applicationUserDao.save(applicationUser);
     }

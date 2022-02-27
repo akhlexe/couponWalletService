@@ -1,6 +1,9 @@
 package com.exepinero.couponwalletservice.security;
 
 import com.exepinero.couponwalletservice.auth.ApplicationUserService;
+import com.exepinero.couponwalletservice.jwt.JwtConfig;
+import com.exepinero.couponwalletservice.jwt.JwtTokenVerifier;
+import com.exepinero.couponwalletservice.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -11,16 +14,26 @@ import org.springframework.security.config.annotation.web.configurers.SessionMan
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.crypto.SecretKey;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ApplicationUserService applicationUserService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtConfig jwtConfig;
+    private final SecretKey secretKey;
 
-    public SecurityConfig(ApplicationUserService applicationUserService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(ApplicationUserService applicationUserService,
+                          PasswordEncoder passwordEncoder,
+                          JwtConfig jwtConfig,
+                          SecretKey secretKey) {
+
         this.applicationUserService = applicationUserService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtConfig = jwtConfig;
+        this.secretKey = secretKey;
     }
 
     @Override
@@ -29,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(),secretKey,jwtConfig))
+                .addFilterAfter(new JwtTokenVerifier(jwtConfig,secretKey), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/","/login").permitAll()
                 .anyRequest().authenticated()
