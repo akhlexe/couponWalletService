@@ -4,6 +4,7 @@ import com.exepinero.couponwalletservice.entity.Wallet;
 import com.exepinero.couponwalletservice.exceptions.WalletNotFoundException;
 import com.exepinero.couponwalletservice.hateoas.WalletModelAssembler;
 import com.exepinero.couponwalletservice.repositories.WalletRepository;
+import com.exepinero.couponwalletservice.services.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -19,51 +20,41 @@ import java.util.stream.Collectors;
 @RequestMapping("/wallets")
 public class WalletController {
 
-    private final WalletRepository walletRepository;
-    private final WalletModelAssembler assembler;
+    // TODO Refactoring a services
+    private final WalletService walletService;
 
     @Autowired
-    public WalletController(WalletRepository walletRepository, WalletModelAssembler assembler) {
-        this.walletRepository = walletRepository;
-        this.assembler = assembler;
+    public WalletController(WalletService walletService) {
+        this.walletService = walletService;
     }
 
 
     @GetMapping
     public CollectionModel<EntityModel<Wallet>> getWallets(){
 
-        List<EntityModel<Wallet>> wallets = walletRepository.findAll().stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+        CollectionModel<EntityModel<Wallet>> wallets = walletService.getWallets();
 
         return CollectionModel.of(wallets);
     }
 
     @GetMapping("/{id}")
     public EntityModel<Wallet> getWallet(@PathVariable("id") Integer id){
-
-        Wallet wallet = walletRepository.findById(id)
-                .orElseThrow(() -> new WalletNotFoundException(id));
-
-        return assembler.toModel(wallet);
+        return walletService.getWalletById(id);
     }
 
 
     @PostMapping
     public ResponseEntity<?> createWallet(@RequestBody Wallet newWallet){
-        EntityModel<Wallet> entityModel = assembler.toModel(walletRepository.save(newWallet));
+        EntityModel<Wallet> wallet = walletService.createWallet(newWallet);
 
         return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel);
+                .created(wallet.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(wallet);
     }
 
     @DeleteMapping("/id")
     public void deleteWallet(@PathVariable Integer id){
-
-        Wallet wallet = walletRepository.findById(id)
-                .orElseThrow(() -> new WalletNotFoundException(id));
-        walletRepository.delete(wallet);
+        walletService.deleteWallet(id);
     }
 
 }
