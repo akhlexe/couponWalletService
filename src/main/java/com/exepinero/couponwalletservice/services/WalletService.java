@@ -24,6 +24,8 @@ public class WalletService {
     }
 
 
+
+
     public CollectionModel<EntityModel<Wallet>> getWallets(){
 
         List<EntityModel<Wallet>> wallets = walletRepository.findAll().stream()
@@ -41,9 +43,7 @@ public class WalletService {
     }
 
     public EntityModel<Wallet> createWallet(Wallet wallet){
-        Wallet walletSaved = walletRepository.save(wallet);
-        EntityModel<Wallet> walletEntityModel = assembler.toModel(walletSaved);
-        return walletEntityModel;
+        return assembler.toModel(walletRepository.save(wallet));
     }
 
     public void deleteWallet(Integer id){
