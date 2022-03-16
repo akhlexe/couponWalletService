@@ -120,6 +120,9 @@ class WalletServiceTest {
         // then
         Assertions.assertThrows(WalletNotFoundException.class,
                 () -> underTest.getWalletById(idInexistente));
+
+        Assertions.assertThrows(WalletNotFoundException.class,
+                () -> underTest.deleteWallet(30));
     }
 
     // --------------------- AFTER EACH -----------------------------
