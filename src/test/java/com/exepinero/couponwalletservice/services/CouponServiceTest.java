@@ -2,21 +2,17 @@ package com.exepinero.couponwalletservice.services;
 
 import com.exepinero.couponwalletservice.entity.Coupon;
 import com.exepinero.couponwalletservice.entity.Wallet;
+import com.exepinero.couponwalletservice.exceptions.CouponNotFoundException;
 import com.exepinero.couponwalletservice.hateoas.CouponModelAssembler;
 import com.exepinero.couponwalletservice.repositories.CouponRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -27,7 +23,7 @@ class CouponServiceTest {
     @Mock
     private CouponRepository couponRepository;
     @Mock
-    private CouponModelAssembler assembler;
+    private CouponModelAssembler couponModelAssembler;
     @Mock
     private WalletService walletService;
 
@@ -43,7 +39,7 @@ class CouponServiceTest {
         autoCloseable = MockitoAnnotations.openMocks(this);
         underTest = new CouponService(
                 couponRepository,
-                assembler,
+                couponModelAssembler,
                 walletService
         );
     }
@@ -62,22 +58,72 @@ class CouponServiceTest {
 
         // then
         verify(walletService,times(1)).getWalletById(expectedWalletId);
-        verify(assembler, times(3)).toModel(any());
+        verify(couponModelAssembler, times(3)).toModel(any(Coupon.class));
     }
 
     @Test
-    @Disabled
     void canGetOne() {
+        // given
+        int expectedCouponId = 1;
+        Optional<Coupon> testCoupon = this.createTestCoupon();
+        when(couponRepository.findById(expectedCouponId)).thenReturn(testCoupon);
+
+        // when
+        underTest.getOne(expectedCouponId);
+
+        // then
+        verify(couponRepository,times(1)).findById(expectedCouponId);
+        verify(couponModelAssembler, times(1)).toModel(any(Coupon.class));
     }
 
     @Test
-    @Disabled
+    void getOneThrowsExceptionWhenCouponIdNotFound(){
+
+        // given
+        int idInexistence = 30;
+        when(couponRepository.findById(idInexistence))
+                .thenThrow(CouponNotFoundException.class);
+
+        // then
+        Assertions.assertThrows(CouponNotFoundException.class,
+                () -> underTest.getOne(idInexistence));
+
+        Assertions.assertThrows(CouponNotFoundException.class,
+                () -> underTest.deleteCoupon(idInexistence));
+    }
+
+    @Test
     void canCreateCoupon() {
+        // given
+        int expectedWalletId = 1;
+        Coupon coupon = createTestCoupon().get();
+        EntityModel<Wallet> testWalletWithCoupons = createTestWalletWithCoupons();
+        when(walletService.getWalletById(any(Integer.class))).thenReturn(testWalletWithCoupons);
+        when(couponRepository.save(coupon)).thenReturn(coupon);
+
+        // when
+        underTest.createCoupon(expectedWalletId,coupon);
+
+        // then
+        verify(walletService, times(1)).getWalletById(expectedWalletId);
+        verify(couponRepository, times(1)).save(any(Coupon.class));
+        verify(couponModelAssembler, times(1)).toModel(any(Coupon.class));
     }
 
     @Test
-    @Disabled
     void canDeleteCoupon() {
+
+        // given
+        int expectedId = 1;
+        Optional<Coupon> testCoupon = createTestCoupon();
+        when(couponRepository.findById(expectedId)).thenReturn(testCoupon);
+
+        // when
+        underTest.deleteCoupon(expectedId);
+
+        // then
+        verify(couponRepository, times(1)).findById(expectedId);
+        verify(couponRepository, times(1)).delete(testCoupon.get());
     }
 
 
@@ -102,16 +148,19 @@ class CouponServiceTest {
         testWallet.setWalletOwner("Exequiel");
 
         Coupon cupon1 = new Coupon();
+        cupon1.setId(2);
         cupon1.setEmpresa("Netflix");
         cupon1.setPromo("1 mes gratis");
         cupon1.setFechaExpiracion(new Date());
 
         Coupon cupon2 = new Coupon();
+        cupon1.setId(3);
         cupon2.setEmpresa("Mc Donalds");
         cupon2.setPromo("Hamburguesa Gratis!");
         cupon2.setFechaExpiracion(new Date());
 
         Coupon cupon3 = new Coupon();
+        cupon1.setId(4);
         cupon3.setEmpresa("Coca cola");
         cupon3.setPromo("Gasosea gratis");
         cupon3.setFechaExpiracion(new Date());
@@ -133,6 +182,7 @@ class CouponServiceTest {
     private Optional<Coupon> createTestCoupon(){
 
         Coupon cupon1 = new Coupon();
+        cupon1.setId(1);
         cupon1.setEmpresa("Netflix");
         cupon1.setPromo("1 mes gratis");
         cupon1.setFechaExpiracion(new Date());
