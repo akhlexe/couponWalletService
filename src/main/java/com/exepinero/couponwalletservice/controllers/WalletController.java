@@ -1,9 +1,6 @@
 package com.exepinero.couponwalletservice.controllers;
 
 import com.exepinero.couponwalletservice.entity.Wallet;
-import com.exepinero.couponwalletservice.exceptions.WalletNotFoundException;
-import com.exepinero.couponwalletservice.hateoas.WalletModelAssembler;
-import com.exepinero.couponwalletservice.repositories.WalletRepository;
 import com.exepinero.couponwalletservice.services.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -11,10 +8,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/wallets")

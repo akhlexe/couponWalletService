@@ -18,6 +18,7 @@ import org.springframework.hateoas.EntityModel;
 import java.util.Date;
 import java.util.Optional;
 
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -84,7 +85,8 @@ class WalletServiceTest {
     void canCreateWallet() {
         // given
         Wallet wallet = createWallet();
-        when(walletRepository.save(wallet)).thenReturn(wallet);
+//        when(walletRepository.save(wallet)).thenReturn(wallet);
+        when(walletRepository.save(any())).then(returnsFirstArg());
 
         // when
         underTest.createWallet(wallet);
