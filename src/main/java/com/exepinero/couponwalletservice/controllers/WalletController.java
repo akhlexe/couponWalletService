@@ -24,9 +24,7 @@ public class WalletController {
 
     @GetMapping
     public CollectionModel<EntityModel<Wallet>> getWallets(){
-
         CollectionModel<EntityModel<Wallet>> wallets = walletService.getWallets();
-
         return CollectionModel.of(wallets);
     }
 
@@ -45,7 +43,7 @@ public class WalletController {
                 .body(wallet);
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public void deleteWallet(@PathVariable Integer id){
         walletService.deleteWallet(id);
     }

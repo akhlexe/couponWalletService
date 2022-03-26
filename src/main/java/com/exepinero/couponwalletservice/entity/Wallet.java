@@ -1,5 +1,7 @@
 package com.exepinero.couponwalletservice.entity;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -21,6 +23,10 @@ public class Wallet {
 
     @OneToMany(mappedBy = "walletContenedora",cascade = CascadeType.ALL)
     private List<Coupon> cupones = new ArrayList<>();
+
+    public Wallet() {
+    }
+
 
     @Override
     public String toString() {
